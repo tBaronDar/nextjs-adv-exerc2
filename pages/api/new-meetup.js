@@ -1,14 +1,28 @@
 import { MongoClient } from "mongodb";
 
-function handler(req, res) {
+async function handler(req, res) {
   if (req.method === "POST") {
     const data = req.body;
 
-    const { title, image, address, description } = data;
-
-    MongoClient.connect(
-      "mongodb+srv://thebaron:iBrBGm3U4RF9O4Fy@themis.mdjsoz3.mongodb.net/meetups?retryWrites=true&w=majority"
+    //connect to mongodb
+    const client = await MongoClient.connect(
+      "mongodb+srv://thebaron:RourouHboubou@themis.mdjsoz3.mongodb.net/meetups?retryWrites=true&w=majority"
     );
+
+    //get the db
+    const db = client.db();
+
+    //get the collection named meetups. if it doesn't exist it will be created.
+    const meetupsCollection = db.collection("meetups");
+
+    //Insert document(=js object) in the collection
+    const result = await meetupsCollection.insertOne(data);
+
+    console.log(result);
+
+    client.close();
+
+    res.status(201).json({ message: "Meetup added to db." });
   }
 }
 
